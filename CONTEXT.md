@@ -88,7 +88,7 @@ These all become `Uint8Array` literals or readonly tuples in `src/data/`. Routin
 
 ## Graphics — the one piece not in the disassembly
 
-The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). Per [ADR-0004](docs/adr/0004-chr-tiles-in-source-with-runtime-palette-baking.md), we currently **author placeholder CHR tiles in-source** as 8-line string grids in `src/data/chr-tiles.ts`. Each row is `"01230123"` style; chars `0`–`3` denote palette indices 0–3. A boot-time decoder composes the tiles into one greyscale offscreen canvas — the input to the palette-baking step described below. Swapping to a ROM-derived CHR later is a single-file change.
+The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). Per [ADR-0004](docs/adr/0004-chr-tiles-in-source-with-runtime-palette-baking.md), CHR tiles are **transcribed once from the original cartridge's CHR-ROM and committed in-source as 8-line string grids** in `src/data/chr-tiles.ts`. Each row is `"01230123"` style; chars `0`–`3` denote palette indices 0–3. A boot-time decoder composes the tiles into one greyscale offscreen canvas — the input to the palette-baking step described below. The runtime never reads a ROM; the regen script at `scripts/extract-chr-from-rom.ts` is dev-only and not part of the bundle.
 
 (This is a personal project; copyright is not in scope.)
 

@@ -31,3 +31,11 @@ For palette handling: the NES PPU pairs every 8×8 tile with one of four sub-pal
 - Starman's per-frame palette flicker (and any other dynamic recolour) is supported by re-baking the affected sub-palette on the same frame; cost is one row of the baked sheet (~1 ms).
 - Visual fidelity is whatever we hand-author. The renderer is correct regardless of how Mario the placeholder tiles look.
 - The bake step is *almost* a pure data-over-data transformation but operates on a `OffscreenCanvas`. Per `CONTEXT.md` § Pitfalls we do not test it; we eyeball the output instead.
+
+## Update — 2026-05-07: ROM as one-shot transcription source
+
+We collapsed options 1 and 2 of the original "Context" section. The `src/data/chr-tiles.ts` file is still the single source of truth for tile pixels, and the runtime is still pure string-grid → greyscale-canvas — no binary asset, no async loader, no ROM in the bundle. What changed: the 256 string-grid tiles are now **transcribed once from the original cartridge's CHR-ROM** by the dev-only script `scripts/extract-chr-from-rom.ts`, then committed verbatim. The ROM input is not committed.
+
+The "single-file change" promise (Consequences, bullet 2) is now actually fulfilled: regenerating from a different CHR source is one script run, output redirected over `src/data/chr-tiles.ts`. The bake step, palette pipeline, demo, and `main.ts` are untouched by this update.
+
+A separate follow-up slice will remap the small `TileSlot` named subset to the correct SMB CHR indices so the demo stops looking garbled; that is tracked in `TODO.md` and is out of scope for this update.
