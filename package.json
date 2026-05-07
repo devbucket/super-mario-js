@@ -13,7 +13,8 @@
     "lint:staged": "lint-staged -q",
     "prepare": "husky",
     "format": "biome format --write .",
-    "format:check": "biome ci --linter-enabled=false --assist-enabled=false ."
+    "format:check": "biome ci --linter-enabled=false --assist-enabled=false .",
+    "test": "vitest run"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
@@ -28,11 +29,13 @@
     "@biomejs/biome": "^2.4.14",
     "@eslint/js": "^9.39.4",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/node": "^25.6.1",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.46.0",
-    "vite": "^8.0.11"
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5"
   }
 }
