@@ -13,12 +13,12 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Rendering primitives
 
-- [ ] Extract CHR ROM tiles to `public/assets/chr.png`
-- [ ] NES master palette as a TS constant
-- [ ] Tile renderer: draw an 8×8 tile by index + palette
-- [ ] Metatile renderer: draw a 16×16 metatile from the metatile table
-- [ ] Camera with horizontal scroll
-- [ ] HUD overlay layer (score, coins, world, time) — placeholder digits OK
+- [x] Hand-author placeholder CHR tiles in `src/data/chr-tiles.ts` (per ADR-0004; ROM-derived CHR deferred)
+- [x] NES master palette as a TS constant
+- [x] Tile renderer: draw an 8×8 tile by index + palette
+- [x] Metatile renderer: draw a 16×16 metatile from the metatile table
+- [x] Camera with horizontal scroll
+- [x] HUD overlay layer (score, coins, world, time) — placeholder digits OK
 
 ## Level data pipeline
 

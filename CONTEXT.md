@@ -88,14 +88,19 @@ These all become `Uint8Array` literals or readonly tuples in `src/data/`. Routin
 
 ## Graphics — the one piece not in the disassembly
 
-The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). We will:
-
-1. Extract the CHR bank from a dump of the original ROM (`smb.nes`, bytes `0x8010..` of the iNES file).
-2. Convert each 16-byte 8×8 tile into an indexed image, packed into a single sprite-sheet PNG (`public/assets/chr.png`).
-3. Encode the **NES master palette** (the 64-entry RGB table) as a TS constant.
-4. Use the per-area palette indices loaded by the asm to colour tiles at render time.
+The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). Per [ADR-0004](docs/adr/0004-chr-tiles-in-source-with-runtime-palette-baking.md), we currently **author placeholder CHR tiles in-source** as 8-line string grids in `src/data/chr-tiles.ts`. Each row is `"01230123"` style; chars `0`–`3` denote palette indices 0–3. A boot-time decoder composes the tiles into one greyscale offscreen canvas — the input to the palette-baking step described below. Swapping to a ROM-derived CHR later is a single-file change.
 
 (This is a personal project; copyright is not in scope.)
+
+### Rendering pipeline vocabulary
+
+These are the terms we use across the renderer. They roughly mirror the PPU's pattern-table + palette-latch model.
+
+- **Master palette** — the 64-entry RGB table baked into the NES PPU. Lives at `src/data/master-palette.ts`.
+- **Sub-palette** — four indices into the master palette. The PPU has eight (4 background, 4 sprite); per area, we configure them up-front.
+- **Area palette** — the four background sub-palettes used while a given area (overworld, underground, castle, …) is active. Lives at `src/data/palettes.ts`.
+- **CHR sheet** — the source greyscale offscreen canvas of all 256 tile slots, filled with four greys (`0 / 85 / 170 / 255`).
+- **Baked CHR sheet** — every CHR slot × every sub-palette pre-rendered to one larger offscreen canvas. Re-baked on area-palette change. Per-frame tile draws are pure `drawImage` blits from this sheet.
 
 ## Audio approach
 

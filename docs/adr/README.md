@@ -26,3 +26,4 @@ What this commits us to. What becomes easier or harder downstream.
 - [ADR-0001: Port the disassembly into TypeScript](./0001-port-the-disassembly.md)
 - [ADR-0002: Procedural / module-oriented TypeScript (not FP, not OOP)](./0002-procedural-typescript.md)
 - [ADR-0003: Modern naming, structural fidelity to the disassembly](./0003-modern-naming-structural-fidelity.md)
+- [ADR-0004: CHR tiles authored in-source, runtime palette baking](./0004-chr-tiles-in-source-with-runtime-palette-baking.md)

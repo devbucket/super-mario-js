@@ -1,5 +1,6 @@
+import { runScrollTest } from './demo/scroll-test.js';
 import { attachCanvasResize } from './engine/canvas-host.js';
-import { attachKeyboardInput, formatJoypadBinary, formatJoypadHex, getJoypadSnapshot } from './engine/input.js';
+import { attachKeyboardInput, getJoypadSnapshot } from './engine/input.js';
 import { startGameLoop } from './engine/loop.js';
 
 const root = document.querySelector<HTMLElement>('#game-root');
@@ -18,27 +19,20 @@ if (ctx === null) {
 const canvasEl = canvas;
 const ctx2d = ctx;
 
+ctx2d.imageSmoothingEnabled = false;
+
 const detachResize = attachCanvasResize(canvasEl, root);
 const detachInput = attachKeyboardInput();
+const demo = runScrollTest();
 
-let displaySimFrame = 0;
-let displayJoypad = 0;
-
-function paint(): void {
-  ctx2d.fillStyle = '#1a1a2e';
-  ctx2d.fillRect(0, 0, canvasEl.width, canvasEl.height);
-
-  ctx2d.fillStyle = '#eaeaea';
-  ctx2d.font = '8px monospace';
-  ctx2d.textBaseline = 'top';
-  ctx2d.fillText(`frame ${displaySimFrame}`, 4, 4);
-  ctx2d.fillText(`joypad ${formatJoypadHex(displayJoypad)} ${formatJoypadBinary(displayJoypad)}`, 4, 14);
-}
-
-const detachLoop = startGameLoop(({ frameIndex }) => {
-  displayJoypad = getJoypadSnapshot();
-  displaySimFrame = frameIndex;
-}, paint);
+const detachLoop = startGameLoop(
+  () => {
+    demo.tick(getJoypadSnapshot());
+  },
+  () => {
+    demo.paint(ctx2d);
+  },
+);
 
 window.addEventListener('beforeunload', () => {
   detachResize();
