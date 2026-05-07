@@ -8,7 +8,8 @@ import { bakePaletteVariants } from '../engine/ppu/bake-palette-variants.js';
 import { buildChrSheet } from '../engine/ppu/build-chr-sheet.js';
 import type { HudState } from '../engine/ppu/draw-hud-overlay.js';
 import { drawHudOverlay } from '../engine/ppu/draw-hud-overlay.js';
-import { METATILE_PX } from '../engine/ppu/types.js';
+import { METATILE_PX, TILE_SLOTS } from '../engine/ppu/types.js';
+import { startTilePixelBuilder } from '../engine/ppu/utils/start-tile-pixel-builder.js';
 import { buildDemoMetatileTable } from './utils/build-demo-metatile-table.js';
 import { drawDemoWorld } from './utils/draw-demo-world.js';
 
@@ -65,7 +66,11 @@ export interface DemoBundle {
  * hand-authored 1-1 fragment with D-pad, HUD pinned on top.
  */
 export function runScrollTest(): DemoBundle {
-  const chrSheet = buildChrSheet(chrTiles);
+  const chrTilesWithDebugSlot = [...chrTiles];
+
+  chrTilesWithDebugSlot[TILE_SLOTS - 1] = startTilePixelBuilder().row(0, '33333333').rect(2, 2, 5, 5, 2).build();
+
+  const chrSheet = buildChrSheet(chrTilesWithDebugSlot);
   const baked = bakePaletteVariants(chrSheet, masterPalette, overworldGroundPalette);
   const metatileTable = buildDemoMetatileTable();
   const camera = createCamera();
