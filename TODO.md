@@ -131,4 +131,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [ ] Loading screen / preload assets
 - [ ] Fullscreen toggle
 
-## Done = all 32 levels playable end-to-end with NES-faithful feel.
+## Done = all 32 levels playable end-to-end with NES-faithful feel
