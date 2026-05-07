@@ -1,0 +1,61 @@
+---
+description: File layout — one function per file, helpers in domain-level utils/, no exceptions
+alwaysApply: true
+---
+
+# File layout
+
+SOLID and Clean Code applied to the file system itself. Pair this with [code-style.mdc](code-style.mdc) and [naming.mdc](naming.mdc).
+
+## The rule
+
+**Exactly one function per `.ts` file.** The file's single purpose is to implement that one function. The filename is the kebab-case form of the function name.
+
+```text
+parseAreaData         → src/game/parse-area-data.ts        (export function parseAreaData)
+findEmptyEnemySlot    → src/game/find-empty-enemy-slot.ts  (export function findEmptyEnemySlot)
+tickPlayer            → src/game/tick-player.ts            (export function tickPlayer)
+```
+
+## Every helper goes to `utils/` — no exceptions
+
+A "helper" is any function called by the file's main function. **Reuse count is irrelevant.** A one-callsite private helper called only by `parseAreaData` lives in its own file under `utils/`, not inside `parse-area-data.ts`.
+
+We are deliberately not optimising for reusability. We are optimising for **scannability** and **single-responsibility at the file-system level**. If you want to know what `parseAreaData` calls, you read its imports.
+
+## Why
+
+- Any function in the repo is locatable by its filename — no grep needed.
+- One concern per file means a file diff tells one story.
+- The structure happens to mirror the disassembly's labelled-subroutine table 1:1 (per [docs/adr/0003-modern-naming-structural-fidelity.md](../../docs/adr/0003-modern-naming-structural-fidelity.md)), so structural fidelity falls out for free.
+
+## Where helpers live
+
+Each domain has its own `utils/` folder:
+
+- `src/engine/utils/` — engine helpers.
+- `src/game/utils/` — game helpers.
+- `src/game/enemies/utils/` — sub-domain helpers when the sub-domain grows them.
+- `src/utils/` — genuinely cross-domain helpers. If you reach there often, the helper probably wants its own domain.
+
+The same one-function-per-file rule applies recursively inside `utils/`.
+
+## What may stay in the file alongside the one function
+
+- **Local `const`s** scoped to the function — configuration of the function itself (e.g. `const MAX_JUMP_FRAMES = 30` inside `tick-player-jump.ts`). These are not "helpers".
+- **Local `interface` / `type`** declarations describing the function's parameters or return shape (per [code-style.mdc](code-style.mdc)'s interface-first rule).
+- **The single `export function`** itself.
+- That is all.
+
+## Carve-outs for non-functions
+
+The "one function" rule applies to *functions*. Files that contain no functions can group related declarations:
+
+- **Data files** (`src/data/levels.ts`, `palettes.ts`, `metatiles.ts`, ...) — related `Uint8Array` / readonly-tuple constants.
+- **Constants files** (`src/data/constants.ts`) — related constant values.
+- **Type-only files** (`types.ts` at a domain root) — `interface` / `type` declarations shared by ≥ 2 files in that domain.
+- **Module barrels** (`index.ts`) — only when an outside caller benefits from a deliberate public surface; never a dump of every file in the folder.
+
+## Tests
+
+`__tests__/<source-name>.test.ts` mirrors the file under test. One test file per source file.

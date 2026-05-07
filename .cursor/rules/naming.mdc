@@ -1,0 +1,55 @@
+---
+description: Naming — short, human-readable, modern domain names; verb prefixes; unit suffixes; kebab-case files
+alwaysApply: true
+---
+
+# Naming
+
+Consistent naming lets humans and AI infer intent without reading every implementation. Pair this with [code-style.mdc](code-style.mdc) and [file-layout.mdc](file-layout.mdc).
+
+## Principle
+
+Short, human-readable, intention-revealing names in modern TypeScript idiom. **Domain language is the game's language** — `player`, `jump`, `scroll`, `enemy`, `goomba`, `fireball`, `pipe`, `world`, `level`, `frame`. **Not the disassembly's vocabulary.**
+
+**Do not use asm symbols, register names, or memory addresses as identifiers, and do not reference them in comments.** No `Player_X_MoveForce`, no `JumpEngine`, no `$0705`, no `xReg` / `yReg` / `aReg`. The asm informs structure, not naming — see [docs/adr/0003-modern-naming-structural-fidelity.md](../../docs/adr/0003-modern-naming-structural-fidelity.md).
+
+No cryptic abbreviations. No vague nouns: avoid `data`, `info`, `manager`, `handler`, `helper` as standalone names — say what it actually is.
+
+## Files and folders
+
+- **kebab-case** for all file and folder names: `area-parser.ts`, `enemies/goomba.ts`, `tick-player.ts`.
+- Exported function and value names: `camelCase` (`tickPlayer`, `findEmptyEnemySlot`).
+- Exported `interface` and `type` names: `PascalCase` (`PlayerState`, `EnemyKind`).
+- See [file-layout.mdc](file-layout.mdc) for how filename relates to function name.
+
+## Function prefixes (return shape)
+
+- **`find…`** — may return `null` / `undefined` (e.g. `findEmptyEnemySlot`).
+- **`get…`** — guaranteed non-null; throws or asserts if missing (e.g. `getActiveLevel`).
+- **`ensure…`** — takes a nullable, throws if null, returns the value. Keeps `get` implementations short.
+- **`list…`** — returns an array (e.g. `listActiveEnemies`). Do not use `get` for collections.
+
+## Boolean prefixes
+
+- **`is…`** — state predicate (`isOnGround`, `isPlayerSwimming`).
+- **`has…`** — possession predicate (`hasPowerup`, `hasReachedFlagpole`).
+
+## Time and units
+
+- **`…At`** — point in time / timestamp.
+- **`…Ms`** — duration in milliseconds.
+- **`…Frames`** — frame counters; the dominant unit in this codebase since the simulation is frame-locked at 60 fps.
+- Suffix other units on the name: `widthPx`, `subpixelXForce`, `pageY`, `tileIndex`.
+
+## Action verbs
+
+- **`create`** / **`update`** — entity lifecycle.
+- **`parse`** — unstructured to structured (e.g. `parseAreaData`).
+- **`tick`** — per-frame routines (e.g. `tickPlayer`, `tickGoomba`).
+- **`render`** / **`draw`** — output to canvas.
+
+## Verbosity and scope
+
+- Prefer **verbose** over abbreviated. `enemySlotIndex`, not `i` (unless it's a loop counter in a tight scope).
+- Short single-letter names are OK only in narrow scope: loop index `i`, and `x` / `y` for pixel coordinates inside one function.
+- **Register-style scratch vars (`a`, `xReg`, `yReg`) are forbidden.** They leak the 6502 into the codebase.

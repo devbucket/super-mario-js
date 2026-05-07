@@ -4,13 +4,13 @@
 
 A browser-playable clone of the original NES **Super Mario Bros.** that looks, sounds, and *feels* identical to the 1985 cartridge — implemented in **plain TypeScript**, compiled and served by **Vite**, rendered to an **HTML5 2D Canvas**. No game framework, no React, no engine.
 
-The reference is the [SMBDIS.ASM disassembly by doppelganger](https://gist.github.com/1wErt3r/4048722) — a fully commented dump of the original 6502 ROM, including every constant, every routine, and every level/enemy data table. We treat that file as our **specification**: routines port to TypeScript functions, data tables port to `Uint8Array` literals, and physics constants are copied verbatim.
+The reference is the [SMBDIS.ASM disassembly by doppelganger](https://gist.github.com/1wErt3r/4048722) — a fully commented dump of the original 6502 ROM, including every constant, every routine, and every level/enemy data table. We treat that file as our **structural and behavioural specification**: routines port to TypeScript functions in the same order, data tables port to `Uint8Array` literals, and physics constants are copied verbatim. Identifiers are modernised, not transcribed (see [ADR-0003](docs/adr/0003-modern-naming-structural-fidelity.md)).
 
 This is a **personal / educational project**. We are not concerned with copyright or distribution; the goal is to learn how the NES works by faithfully recreating one of its most important games.
 
 ## Our approach
 
-We port the disassembly into idiomatic TypeScript. Routines become functions, data tables (`.db` / `.dw`) become `Uint8Array` literals or readonly tuples, and physics constants are copied verbatim. A hand-rolled Canvas renderer mimics the PPU's tile/metatile/sprite/palette/scroll model. A small Web Audio module synthesises the APU. The disassembly is our specification: we transcribe, we do not redesign.
+We port the disassembly into idiomatic, modern TypeScript. The disassembly is our **structural and behavioural specification**: routine boundaries become TS functions in the same order, data tables (`.db` / `.dw`) become `Uint8Array` literals or readonly tuples, and physics constants are copied verbatim. A hand-rolled Canvas renderer mimics the PPU's tile/metatile/sprite/palette/scroll model. A small Web Audio module synthesises the APU. **Identifiers, however, are modernised** — see [ADR-0003](docs/adr/0003-modern-naming-structural-fidelity.md). We transcribe behaviour, we do not redesign it; we modernise vocabulary, we do not preserve 6502 conventions.
 
 ## The mental model: what an NES game actually is
 
@@ -19,7 +19,7 @@ The "NES feel" is not just visuals — it's a specific architecture. To behave i
 | NES subsystem | What it does | TS equivalent |
 |---|---|---|
 | **6502 CPU @ ~1.79 MHz** | Runs the game logic on the PPU's NMI at 60.0988 Hz | `requestAnimationFrame` + fixed-step accumulator at 60 fps |
-| **2 KB internal RAM** | Holds all variables (zero page `$00–$FF` and `$0200–$07FF`) | A `RAM` module wrapping a typed-object state — we are *not* using a literal `Uint8Array(0x800)`, but the layout of variables mirrors the asm so addresses in comments still make sense |
+| **2 KB internal RAM** | Holds all variables (zero page `$00–$FF` and `$0200–$07FF`) | A `RAM` module wrapping a typed-object state — we are *not* using a literal `Uint8Array(0x800)`. The layout of variables mirrors the asm internally for behavioural fidelity, but exported names are modern TypeScript (no asm symbols or addresses, per [ADR-0003](docs/adr/0003-modern-naming-structural-fidelity.md)) |
 | **PPU (graphics)** | 256×240 output, two 32×30 nametables, 64 sprites, 4+4 four-colour palettes, scroll registers, sprite-0 hit | Canvas 2D tile/sprite renderer with a camera and a fixed HUD layer |
 | **APU (audio)** | 2 pulse, 1 triangle, 1 noise, 1 DMC | Web Audio: two `OscillatorNode`s in `'square'`, one `'triangle'`, an LFSR-driven worklet for noise |
 | **Controller** | 8 button bits | `keydown`/`keyup` mapped to a bitmask matching the asm's `JoypadBitMask` |
@@ -40,7 +40,7 @@ These are the things that, if skipped or approximated, make the clone feel "almo
 
 ### Subpixel physics (the big one)
 
-Mario's position is **16-bit fixed-point**: a high byte (pixel) and a low byte (1/256th of a pixel). Movement adds a "force" to the low byte and *carries* into the high byte. The asm symbols that drive this:
+Mario's position is **16-bit fixed-point**: a high byte (pixel) and a low byte (1/256th of a pixel). Movement adds a "force" to the low byte and *carries* into the high byte. The asm symbols below are reference only — they appear here in this domain doc to ground the explanation, but **never appear in our TypeScript code** (per [ADR-0003](docs/adr/0003-modern-naming-structural-fidelity.md)). The TS equivalents use modern names (e.g. `playerXPosition`, `subpixelXForce`).
 
 ```
 Player_X_Position    = $86      ; integer pixel X
@@ -179,9 +179,9 @@ These are mistakes that look correct in isolation but quietly break the "it feel
 
 ### Architecture
 
-- **Don't sprinkle global mutable state across files.** Encapsulate in a `RAM` module so port mistakes are localised. Comments can keep referring to `$0705` etc. — but only one module *defines* those slots.
+- **Don't sprinkle global mutable state across files.** Encapsulate in a `RAM` module so port mistakes are localised. **Comments do not reference asm addresses or symbols** (per [ADR-0003](docs/adr/0003-modern-naming-structural-fidelity.md)); the `RAM` module exports modern names like `subpixelXForce`.
 - **Don't refactor the asm's structure prematurely.** Port routines 1:1 first, *then* clean up. Premature abstraction will make it impossible to compare behaviour against the source spec.
-- **Don't write generic "Entity" or "Component" abstractions.** SMB's enemies are state machines with hand-tuned exceptions. A 5-slot fixed enemy pool (`FindEmptyEnemySlot`) is required by parts of the game logic — keep it.
+- **Don't write generic "Entity" or "Component" abstractions.** SMB's enemies are state machines with hand-tuned exceptions. A 5-slot fixed enemy pool (`FindEmptyEnemySlot`) is required by parts of the game logic — keep it. See [ADR-0002](docs/adr/0002-procedural-typescript.md) for the procedural / module-oriented stance this project commits to.
 - **Don't try to make rendering generic.** It's tiles + sprites. That's it. A "scene graph" is overkill.
 
 ### Rendering

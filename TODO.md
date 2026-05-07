@@ -6,10 +6,10 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Foundations
 
-- [ ] Vite + TypeScript skeleton, `index.html`, `npm run dev` works
-- [ ] Canvas mounted at NES native 256×240, integer-scaled to fill viewport
-- [ ] Fixed-step 60 fps game loop with frame counter overlay
-- [ ] Keyboard input → `JoypadBitMask` (A, B, Select, Start, D-pad)
+- [x] Vite + TypeScript skeleton, `index.html`, `npm run dev` works
+- [x] Canvas mounted at NES native 256×240, integer-scaled to fill viewport
+- [x] Fixed-step 60 fps game loop with frame counter overlay
+- [x] Keyboard input → `JoypadBitMask` (A, B, Select, Start, D-pad)
 
 ## Rendering primitives
 

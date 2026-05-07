@@ -1,0 +1,41 @@
+---
+description: Refactor safety — small, reversible changes; one area per task; no drive-by rewrites
+alwaysApply: true
+---
+
+# Refactor safety
+
+Ship value in **small steps**. Prefer changes that are **easy to review and easy to revert**.
+
+## Principles
+
+1. **No big-bang rewrites** — never "fix the whole engine" in one pass.
+2. **Reversible first** — additive over destructive until the new path is proven against the reference (asm output, captured frames, the disassembly's behavior).
+3. **One area per task** — one routine, one engine module, one data table — unless the task genuinely requires coordination.
+
+## Do
+
+- Keep diffs **purpose-driven** and review-sized; the diff should tell a single story.
+- **Follow the existing pattern** in the nearest file before inventing new structure.
+- When replacing behavior, keep the old path until the new one matches the reference.
+- When a routine is a 1:1 port, **preserve the asm's structure** (jump tables, fall-through, fixed slot pools) even if it looks un-idiomatic — see `CONTEXT.md` § Pitfalls.
+
+## Don't
+
+- **No drive-by cleanups** — don't reformat or rename unrelated files inside a feature change.
+- **No new frameworks or libs** "while you're here". The stack is `vite` + plain TS + Canvas + Web Audio.
+- **No mass renames** unless the task requires it.
+- **Don't delete the only working implementation** before the replacement runs end-to-end.
+- **Don't refactor an asm port "for clarity" before it's verified** against the original behavior.
+
+## Stop and split
+
+Pause and break the work down if:
+
+- The change touches several unrelated subsystems (e.g. PPU + APU + RAM in one pass).
+- You're tempted to refactor a shared primitive (`RAM`, timers, the fixed-step loop, `PseudoRandomBitReg`) for a one-off feature — solve it locally first.
+- You catch yourself "while I'm here"-ing into files unrelated to the task.
+
+## Done means
+
+The slice runs, the behavior matches the reference (or the explicit milestone in `TODO.md`), and the diff tells **one** story.

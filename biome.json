@@ -1,0 +1,75 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+  "files": {
+    "includes": ["**", "!!biome.json", "!!**/dist", "!!**/coverage", "!!package-lock.json", "!!**/.github"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 160,
+    "lineEnding": "lf"
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "attributePosition": "auto"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "style": {
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "separatedType" }
+        },
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": { "style": "interface" }
+        },
+        "noDefaultExport": "error",
+        "useFilenamingConvention": {
+          "level": "warn",
+          "options": { "filenameCases": ["kebab-case"] }
+        }
+      },
+      "correctness": {
+        "noUnusedImports": { "level": "error", "fix": "safe" },
+        "noUnusedVariables": { "level": "error", "fix": "safe" }
+      },
+      "complexity": {
+        "useArrowFunction": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["*.config.{ts,js,mjs,cjs}", "**/*.config.{ts,js,mjs,cjs}"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

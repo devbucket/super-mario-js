@@ -1,0 +1,72 @@
+---
+description: Commit message format — use when creating git commits
+alwaysApply: true
+---
+
+# Commit messages
+
+## Format
+
+```text
+<type>: <short summary>
+
+<optional body: context, rationale, notable details>
+```
+
+## Types
+
+- **`feat:`** — New behavior users care about
+- **`fix:`** — Bug fixes
+- **`refactor:`** — Internal change without intended behavior change
+- **`chore:`** — Tooling, deps, maintenance
+
+## Rules
+
+### Title
+
+- **One line**, max ~72 characters.
+- **Lowercase** description.
+- **Present tense** (e.g. `add` not `added`).
+- **No trailing period**.
+- **Summary**, not a changelog — do not enumerate every file or component.
+- **No ticket numbers** in the title if your workflow adds them elsewhere.
+- **Do not** put file paths or locations in the title — git shows that.
+
+### Body
+
+- **Optional**, but encouraged when the change has non-obvious context, trade-offs, or touches multiple areas.
+- Separated from the title by a **blank line**.
+- Wrap at ~100 characters; use **full sentences**.
+- Explain the **why** and high-level **what**, not a file-by-file diff.
+- Short **bullets** are fine when they genuinely help reviewers or coding agents.
+- **Do not** restate the title, do not include AI or tool attribution.
+
+## Examples
+
+### Good (title only)
+
+- `feat: add photo reorder to listing wizard`
+- `fix: handle empty upload response`
+- `refactor: simplify presigned upload helper`
+
+### Bad
+
+- `Feat: Add feature` (wrong casing)
+- `fix: fixed the bug.` (past tense + period)
+- `feat: src/studio/foo.tsx` (location in title)
+
+### Verbose title
+
+Bad — crams everything into the title:
+
+- `chore: add CampaignWizardProgressSection and CampaignWizardSuccessSection components, update AGENTS.md with new linting instructions, and refine campaign wizard logic for better code organization`
+
+Good — short title plus body:
+
+```text
+feat: add progress and success sections to campaign wizard
+
+Split the campaign wizard into dedicated progress and success sections to improve code
+organization and make each step easier to reason about. Also updates AGENTS.md with
+linting instructions so agents run the lint step after edits.
+```

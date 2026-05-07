@@ -1,0 +1,87 @@
+---
+description: Code style — Clean Code and SOLID, function declarations, interface-first types, project-specific carve-outs
+alwaysApply: true
+---
+
+# Code style
+
+Code is read more than written. This rule covers structural code style; naming lives in [naming.mdc](naming.mdc) and file layout lives in [file-layout.mdc](file-layout.mdc).
+
+## Apply Clean Code and SOLID
+
+For every substantive code change, apply the principles from these two skills:
+
+- **Clean Code** — `~/.agents/skills/clean-code/SKILL.md`. Meaningful names, small functions, one-thing-per-function, no dead comments, error handling, code smells.
+- **SOLID** — `~/.agents/skills/solid/SKILL.md`. SRP, OCP, LSP, ISP, DIP plus the broader "professional craftsmanship" checklist (early returns, small classes, no `else` when early-return works, no register-style scratch vars).
+
+Read both skills on the first code task per session and keep their checklists active during implementation and review.
+
+## Where SOLID applies (and where it does not)
+
+This project is a port of a 6502 disassembly. Apply SOLID with that context:
+
+- **Apply fully at engine edges.** `canvas-host`, `input`, `apu`, and any module with an external dependency that needs to be swappable for tests get full DI treatment, abstractions over concretions, etc.
+- **Do NOT apply inside ports of asm routines.** Routine boundaries, fixed slot pools, and jump-table-as-array dispatch are preserved 1:1 from the disassembly even when the TS would "look cleaner" with a switch or a polymorphic class. See `CONTEXT.md` § Pitfalls and [docs/adr/0002-procedural-typescript.md](../../docs/adr/0002-procedural-typescript.md) and [docs/adr/0003-modern-naming-structural-fidelity.md](../../docs/adr/0003-modern-naming-structural-fidelity.md).
+- This carve-out is about **structure**, not naming — names are always modern (per [naming.mdc](naming.mdc) and ADR-0003).
+
+## Functions: declaration form
+
+Named, top-level, and exported functions are written as `function` declarations. Arrow functions are reserved for short inline callbacks.
+
+```typescript
+// Bad — arrow assigned to const for a top-level/exported function.
+export const tickPlayer = (ram: Ram) => {
+  // ...
+};
+
+// Good — function declaration.
+export function tickPlayer(ram: Ram): void {
+  // ...
+}
+
+// Good — short arrow for an inline callback.
+const slotIndices = enemySlots.map((slot, i) => i);
+
+// Bad — multi-statement inline arrow. Extract to a named function.
+enemySlots.forEach((slot, i) => {
+  if (slot.isActive) {
+    advanceTimers(slot);
+    checkCollisions(slot);
+  }
+});
+```
+
+Multi-statement callbacks are extracted to a named function declaration (which then lives in its own file per [file-layout.mdc](file-layout.mdc)).
+
+## Types: interface first
+
+Object shapes are declared with `interface`. `type` is used only for unions, intersections, mapped types, tuple aliases, function signatures, and primitive aliases.
+
+```typescript
+// Bad — type alias for an object shape.
+type PlayerState = {
+  x: number;
+  y: number;
+  subpixelXForce: number;
+};
+
+// Good — interface for an object shape.
+interface PlayerState {
+  x: number;
+  y: number;
+  subpixelXForce: number;
+}
+
+// Good — type for unions, intersections, function signatures.
+type PowerupKind = 'mushroom' | 'fireFlower' | 'star';
+type Tick = (ram: Ram) => void;
+```
+
+## Comments
+
+- **Don't comment bad code — rewrite it.** A clear name beats a comment every time.
+- **Do not reference asm symbols, addresses, or routine names in comments.** The disassembly is not part of the TypeScript codebase's vocabulary (per [docs/adr/0003-modern-naming-structural-fidelity.md](../../docs/adr/0003-modern-naming-structural-fidelity.md)). No `// PlayerCtrlRoutine, $90C0`, no `// $0705`, no `// jsr JumpEngine`.
+- **Bad comments**: narrating the next line ("increment counter"), commented-out code, redundant restatements of the type.
+- **Good comments**: non-obvious intent, frame-locked timing edge cases, why a constant has the value it does.
+
+See also [naming.mdc](naming.mdc) and [file-layout.mdc](file-layout.mdc).
