@@ -88,7 +88,7 @@ These all become `Uint8Array` literals or readonly tuples in `src/data/`. Routin
 
 ## Graphics — the one piece not in the disassembly
 
-The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). Per [ADR-0004](docs/adr/0004-chr-tiles-in-source-with-runtime-palette-baking.md), CHR tiles are **transcribed once from the original cartridge's CHR-ROM and committed in-source as 8-line string grids** in `src/data/chr-tiles.ts`. Each row is `"01230123"` style; chars `0`–`3` denote palette indices 0–3. A boot-time decoder composes the tiles into one greyscale offscreen canvas — the input to the palette-baking step described below. The runtime never reads a ROM; the regen script at `scripts/extract-chr-from-rom.ts` is dev-only and not part of the bundle.
+The disassembly is logic + data. **Tile pixel art lives in the CHR ROM** (8 KB, not present in the `.asm` file). Per [ADR-0004](docs/adr/0004-chr-tiles-in-source-with-runtime-palette-baking.md), CHR tiles are **transcribed once from the original cartridge's CHR-ROM and committed in-source as 8-line string grids** in `src/data/chr-tiles.ts`. Each row is `"01230123"` style; chars `0`–`3` denote palette indices 0–3. A boot-time decoder composes the tiles into one greyscale offscreen canvas — the input to the palette-baking step described below. The runtime never reads a ROM; the regen script at `scripts/extract-chr-from-rom.ts` is dev-only (default input `docs/data/smb.nes`) and not part of the bundle.
 
 (This is a personal project; copyright is not in scope.)
 
@@ -101,6 +101,7 @@ These are the terms we use across the renderer. They roughly mirror the PPU's pa
 - **Area palette** — the four background sub-palettes used while a given area (overworld, underground, castle, …) is active. Lives at `src/data/palettes.ts`.
 - **CHR sheet** — the source greyscale offscreen canvas of all 256 tile slots, filled with four greys (`0 / 85 / 170 / 255`).
 - **Baked CHR sheet** — every CHR slot × every sub-palette pre-rendered to one larger offscreen canvas. Re-baked on area-palette change. Per-frame tile draws are pure `drawImage` blits from this sheet.
+- **Demo tile indices** — until the level-data slice ports real metatile tables, the scroll demo uses hand-picked CHR slot numbers (and 2×2 tile tuples) that match the cartridge layout. Those names and numbers live in `src/data/demo-tile-slots.ts` and `src/demo/utils/build-demo-metatile-table.ts`, not in generated `chr-tiles.ts`.
 
 ## Audio approach
 

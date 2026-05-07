@@ -15,8 +15,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 - [x] Hand-author placeholder CHR tiles in `src/data/chr-tiles.ts` (per ADR-0004; ROM-derived CHR deferred)
 - [x] Transcribe full 256-tile CHR set from cartridge CHR-ROM via `scripts/extract-chr-from-rom.ts` (per ADR-0004 Update)
-- [ ] Remap `TileSlot` named indices to the actual SMB CHR slots so the demo stops looking garbled
-- [ ] Functional tile builder (`tile().row().rect().build()`) for tiles we author ourselves later (debug overlays, custom HUD glyphs)
+- [x] Remap `TileSlot` named indices to the actual SMB CHR slots so the demo stops looking garbled
+- [x] Functional tile builder (`tile().row().rect().build()`) for tiles we author ourselves later (debug overlays, custom HUD glyphs)
 - [x] NES master palette as a TS constant
 - [x] Tile renderer: draw an 8×8 tile by index + palette
 - [x] Metatile renderer: draw a 16×16 metatile from the metatile table
