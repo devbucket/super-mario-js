@@ -14,25 +14,25 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ## Rendering primitives
 
 - [x] Hand-author placeholder CHR tiles in `src/data/chr-tiles.ts` (per ADR-0004; ROM-derived CHR deferred)
-- [x] Transcribe full 256-tile CHR set from cartridge CHR-ROM via `scripts/extract-chr-from-rom.ts` (per ADR-0004 Update)
+- [x] Transcribe full CHR-ROM from cartridge (512 tiles / both pattern tables) via `scripts/extract-chr-from-rom.ts` (per ADR-0004 Update)
 - [x] Remap `TileSlot` named indices to the actual SMB CHR slots so the demo stops looking garbled
 - [x] Functional tile builder (`tile().row().rect().build()`) for tiles we author ourselves later (debug overlays, custom HUD glyphs)
 - [x] NES master palette as a TS constant
-- [x] Tile renderer: draw an 8×8 tile by index + palette
+- [x] Tile renderer: draw an 8×8 BG tile by bank-relative index + sub-palette (`drawBgTile`)
 - [x] Metatile renderer: draw a 16×16 metatile from the metatile table
 - [x] Camera with horizontal scroll
 - [x] HUD overlay layer (score, coins, world, time) — placeholder digits OK
 
 ## Level data pipeline
 
-- [ ] Port `WorldAddrOffsets` / `AreaAddrOffsets` / `World*Areas` tables
-- [ ] Port `L_GroundArea*` / `L_CastleArea*` / `L_UndergroundArea*` / `L_WaterArea*` as `Uint8Array` literals
-- [ ] Port `E_GroundArea*` etc. as `Uint8Array` literals
-- [ ] Port `BackSceneryMetatiles`, `BrickMetatiles`, `SolidBlockMetatiles`, `CastleMetatiles`, `TerrainRenderBits`
-- [ ] Port `GetAreaDataAddrs` (header parsing)
-- [ ] Port `AreaParserCore` + `ProcessAreaData` + `DecodeAreaData` + `RenderUnderPart`
-- [ ] Port the `JumpEngine` dispatch tables for area objects
-- [ ] **Milestone:** scroll through level 1-1 with authentic geometry (no Mario yet)
+- [x] Port `WorldAddrOffsets` / `AreaAddrOffsets` / `World*Areas` tables (`src/data/extracted/world-area-pointers.ts`)
+- [x] Port `L_GroundArea*` / `L_CastleArea*` / `L_UndergroundArea*` / `L_WaterArea*` as `Uint8Array` literals (`src/data/extracted/levels.ts`)
+- [x] Port `E_GroundArea*` etc. as `Uint8Array` literals (`src/data/extracted/enemies.ts`)
+- [x] Port `BackSceneryMetatiles`, `BrickMetatiles`, `SolidBlockMetatiles`, `CastleMetatiles`, `TerrainRenderBits` (`src/data/extracted/metatile-dictionaries.ts`)
+- [x] Port `GetAreaDataAddrs` (header parsing) (`src/game/get-area-data-addrs.ts`)
+- [x] Port `AreaParserCore` + `ProcessAreaData` + `DecodeAreaData` + `RenderUnderPart`
+- [x] Port the `JumpEngine` dispatch tables for area objects (`src/game/area-object-handlers-data.ts`, `run-area-object-jump-engine.ts`)
+- [x] **Milestone:** scroll through level 1-1 with authentic geometry (no Mario yet) (`src/demo/scroll-test.ts`, `build-level-metatile-grid.ts`)
 
 ## Mario
 

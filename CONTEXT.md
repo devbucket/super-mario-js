@@ -98,9 +98,12 @@ These are the terms we use across the renderer. They roughly mirror the PPU's pa
 
 - **Master palette** — the 64-entry RGB table baked into the NES PPU. Lives at `src/data/master-palette.ts`.
 - **Sub-palette** — four indices into the master palette. The PPU has eight (4 background, 4 sprite); per area, we configure them up-front.
-- **Area palette** — the four background sub-palettes used while a given area (overworld, underground, castle, …) is active. Lives at `src/data/palettes.ts`.
-- **CHR sheet** — the source greyscale offscreen canvas of all 256 tile slots, filled with four greys (`0 / 85 / 170 / 255`).
-- **Baked CHR sheet** — every CHR slot × every sub-palette pre-rendered to one larger offscreen canvas. Re-baked on area-palette change. Per-frame tile draws are pure `drawImage` blits from this sheet.
+- **Area type** — the four kinds of area the game ships (`water = 0`, `ground = 1`, `underground = 2`, `castle = 3`). Encoded in the high byte of the area pointer; selects the area palette, the universal backdrop, and several area-conditional metatile branches in the parser.
+- **Area palette** — the four background sub-palettes used while a given area type is active. One per area type. Lives at `src/data/palettes.ts`. Slot 0 of every sub-palette stores the raw asm placeholder (`$0f`); the actual screen-clear colour is filled in at bake time from the universal-backdrop table.
+- **Universal backdrop** — the per-area-type screen-clear colour the PPU writes to `$3F00` (sky-blue for water/ground, black for underground/castle). On real hardware it is mirrored at slot 0 of every BG sub-palette; we keep that split and resolve it at bake time so future `BackgroundColorCtrl` overrides (night levels) plug in without touching sub-palette data.
+- **Pattern table** — one of the two 256-tile halves of CHR. The NES PPU pairs each pattern table with its own four sub-palettes at draw time. SMB uses the **sprite bank** at `$0000` for sprites and the **BG bank** at `$1000` for backgrounds. We use *pattern table* in prose and the shorthand *BG bank* / *sprite bank* in code.
+- **CHR sheet** — the source greyscale offscreen canvas of all 512 tile slots (sprite bank in slots 0-255, BG bank in slots 256-511), filled with four greys (`0 / 85 / 170 / 255`).
+- **Baked CHR sheet** — for each pattern table, every CHR slot × every sub-palette pre-rendered to one offscreen canvas. The two banks are baked independently because they pair with different sub-palette pools on real hardware. Re-baked on area-palette change. Per-frame tile draws are pure `drawImage` blits from the bank-appropriate baked canvas (`drawBgTile` / `drawSpriteTile`).
 - **Demo tile indices** — until the level-data slice ports real metatile tables, the scroll demo uses hand-picked CHR slot numbers (and 2×2 tile tuples) that match the cartridge layout. Those names and numbers live in `src/data/demo-tile-slots.ts` and `src/demo/utils/build-demo-metatile-table.ts`, not in generated `chr-tiles.ts`.
 
 ## Audio approach
