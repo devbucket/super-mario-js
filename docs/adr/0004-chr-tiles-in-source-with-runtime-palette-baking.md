@@ -39,3 +39,36 @@ We collapsed options 1 and 2 of the original "Context" section. The `src/data/ch
 The "single-file change" promise (Consequences, bullet 2) is now actually fulfilled: regenerating from a different CHR source is one script run, output redirected over `src/data/chr-tiles.ts`. The bake step, palette pipeline, demo, and `main.ts` are untouched by that regen.
 
 For local development, an SMB1 iNES dump may live at `docs/data/smb.nes` (not shipped in the app bundle); `scripts/extract-chr-from-rom.ts` reads it only when you run the script. Named CHR indices for the throwaway scroll demo are **not** regenerated with the grids: they are curated in `src/data/demo-tile-slots.ts` and `src/demo/utils/build-demo-metatile-table.ts` so regen cannot reset them.
+
+## Update — 2026-05-08: two pattern tables, one baked sheet per bank
+
+The original "Context" section (and the 2026-05-07 update) framed CHR as "256 × 8×8 tiles". That was wrong. The cartridge ships **two** 256-tile pattern tables — the *sprite bank* at `$0000` and the *BG bank* at `$1000` — and SMB1 selects them independently for sprites and backgrounds via PPUCTRL. Together that is 8 KB / 512 tiles, exactly what `scripts/extract-chr-from-rom.ts` was already extracting; the runtime side just wasn't honouring the second half. The visible symptom: BG tile index `$24` (the SMB sky-blue blank) drew CHR slot `$24` from the sprite bank — a Mario-fragment tile — turning the sky into noise.
+
+What changes:
+
+- **Greyscale CHR sheet** widens to all 512 slots. Sprite bank in slots 0-255, BG bank in slots 256-511.
+- **Bake step** produces **one baked canvas per pattern table**, paired with its bank's own sub-palette pool. Today only the BG bank is baked (with the four BG sub-palettes); the sprite bank is the slot the future sprite slice will rebake with the four sprite sub-palettes.
+- **Render API** splits along bank lines: `drawBgTile(tileIndex0to255, ...)` ships now and reads from `bakedSheet.bgBank.canvas`; a future `drawSpriteTile` reads from `bakedSheet.spriteBank.canvas`. The bank offset never appears at call sites — metatile draws stay in BG-bank-relative `0..255` coordinates exactly like the disassembly's metatile dictionaries.
+
+The "256 tile slots" wording in the original Decision and Consequences sections is superseded by this update.
+
+## Update — 2026-05-08: universal backdrop split per area type
+
+The original 2026-05-07 take treated each `AreaPalette` as fully self-describing, with slot 0 of every sub-palette holding the actual screen-clear colour (`$22` sky-blue for the placeholder ground palette). On real hardware the screen-clear colour lives in PPU `$3F00` — the *universal backdrop* — and is mirrored at slot 0 of every BG sub-palette; the asm sets it from a separate `BackgroundColors` table indexed by area type, not from the per-area `*PaletteData` blob.
+
+Pretending the two were the same worked while we only had one area type wired. It falls apart the moment we want to ship the four area palettes (water, ground, underground, castle): the four area types share the same sub-palette layout convention but have different backdrops (sky-blue vs black), and a future `BackgroundColorCtrl` override (night levels in 3-1, etc.) needs to change the backdrop without touching sub-palette data.
+
+What changes:
+
+- **Raw `AreaPalette`s now hold `$0f` in slot 0 of every sub-palette**, exactly mirroring the asm's `*PaletteData` blobs. The values in `src/data/palettes.ts` are no longer "approximations"; they are verbatim `WaterPaletteData` / `GroundPaletteData` / `UndergroundPaletteData` / `CastlePaletteData` from `docs/data/SMBDIS.ASM`.
+- **`areaBackdropColors`**, indexed by area type, carries the universal backdrop for each area type (`$22, $22, $0f, $0f`). It is a TS port of `BackgroundColors` at SMBDIS:1426; only the area-type row is ported today, the `BackgroundColorCtrl` row lands with the night-level slice.
+- **`resolveAreaPalette(rawPalette, universalBackdrop)`** is a pure transform that returns a new `AreaPalette` with slot 0 of every sub-palette replaced by the supplied backdrop. The demo runs it before `bakePaletteVariants` so the bake step stays a pure renderer concern that knows nothing about area types.
+
+The end-to-end pipeline is now:
+
+```
+ram.areaType ──┬─► areaPalettesByType[areaType]   ─►  resolveAreaPalette  ──► bakePaletteVariants
+               └─► areaBackdropColors[areaType]   ─┘
+```
+
+`bakePaletteVariants`'s signature is unchanged.

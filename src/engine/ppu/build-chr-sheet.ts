@@ -4,9 +4,10 @@ import { decodeTileStrings } from './utils/decode-tile-strings.js';
 import { writeTileIntoSheet } from './utils/write-tile-into-sheet.js';
 
 /**
- * Compose the in-source CHR tiles into a 128×128 greyscale offscreen canvas
- * (16 tiles wide × 16 rows = 256 slots). Slots beyond `tiles.length` are
- * left as the backdrop grey so the sheet always has 256 slots.
+ * Compose the in-source CHR tiles into a 128×256 greyscale offscreen canvas
+ * (16 tiles wide × 32 rows = 512 slots). The first 256 slots hold the sprite
+ * pattern table; the next 256 hold the BG pattern table. Slots beyond
+ * `tiles.length` are left as the backdrop grey.
  */
 export function buildChrSheet(tiles: readonly TilePixels[]): OffscreenCanvas {
   const canvas = new OffscreenCanvas(SHEET_PX_W, SHEET_PX_H);

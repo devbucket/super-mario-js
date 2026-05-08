@@ -1,4 +1,4 @@
-import { drawTile } from './draw-tile.js';
+import { drawBgTile } from './draw-bg-tile.js';
 import type { BakedChrSheet, MetatileTable } from './types.js';
 import { TILE_PX } from './types.js';
 
@@ -25,8 +25,8 @@ export function drawMetatile(
   const [tl, tr, bl, br] = entry.tileIndices;
   const sub = entry.subPaletteIndex;
 
-  drawTile(ctx, baked, tl, sub, xPx, yPx);
-  drawTile(ctx, baked, tr, sub, xPx + TILE_PX, yPx);
-  drawTile(ctx, baked, bl, sub, xPx, yPx + TILE_PX);
-  drawTile(ctx, baked, br, sub, xPx + TILE_PX, yPx + TILE_PX);
+  drawBgTile(ctx, baked, tl, sub, xPx, yPx);
+  drawBgTile(ctx, baked, tr, sub, xPx + TILE_PX, yPx);
+  drawBgTile(ctx, baked, bl, sub, xPx, yPx + TILE_PX);
+  drawBgTile(ctx, baked, br, sub, xPx + TILE_PX, yPx + TILE_PX);
 }

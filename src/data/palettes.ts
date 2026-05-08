@@ -1,20 +1,62 @@
 import type { AreaPalette } from '../engine/ppu/types.js';
 
 /**
- * Placeholder overworld-ground area palette.
- *
- * Four background sub-palettes, each four indices into the master palette.
- * Index 0 of every sub-palette is conventionally the shared backdrop
- * (NES sky blue `$22`).
- *
- * The numbers here are reasonable hand-picked approximations until the
- * level-data slice ports the asm's per-area palette tables verbatim.
+ * Background sub-palettes per area type, ported verbatim from the asm's
+ * `*PaletteData` blobs (see `docs/data/SMBDIS.ASM`). Slot 0 of every
+ * sub-palette is the raw `$0f` placeholder the asm uses; the actual screen-
+ * clear colour is filled in at bake time from `areaBackdropColors` via
+ * `resolveAreaPalette`. See ADR-0004's 2026-05-08 update.
  */
-export const overworldGroundPalette: AreaPalette = {
+export const waterAreaPalette: AreaPalette = {
   background: [
-    [0x22, 0x29, 0x1a, 0x0f],
-    [0x22, 0x36, 0x17, 0x0f],
-    [0x22, 0x30, 0x27, 0x0f],
-    [0x22, 0x29, 0x1a, 0x0f],
+    [0x0f, 0x15, 0x12, 0x25],
+    [0x0f, 0x3a, 0x1a, 0x0f],
+    [0x0f, 0x30, 0x12, 0x0f],
+    [0x0f, 0x27, 0x12, 0x0f],
   ],
 };
+
+export const groundAreaPalette: AreaPalette = {
+  background: [
+    [0x0f, 0x29, 0x1a, 0x0f],
+    [0x0f, 0x36, 0x17, 0x0f],
+    [0x0f, 0x30, 0x21, 0x0f],
+    [0x0f, 0x27, 0x17, 0x0f],
+  ],
+};
+
+export const undergroundAreaPalette: AreaPalette = {
+  background: [
+    [0x0f, 0x29, 0x1a, 0x09],
+    [0x0f, 0x3c, 0x1c, 0x0f],
+    [0x0f, 0x30, 0x21, 0x1c],
+    [0x0f, 0x27, 0x17, 0x1c],
+  ],
+};
+
+export const castleAreaPalette: AreaPalette = {
+  background: [
+    [0x0f, 0x30, 0x10, 0x00],
+    [0x0f, 0x30, 0x10, 0x00],
+    [0x0f, 0x30, 0x16, 0x00],
+    [0x0f, 0x27, 0x17, 0x00],
+  ],
+};
+
+/**
+ * Indexed by `ram.areaType` (water=0, ground=1, underground=2, castle=3).
+ */
+export const areaPalettesByType: readonly [AreaPalette, AreaPalette, AreaPalette, AreaPalette] = [
+  waterAreaPalette,
+  groundAreaPalette,
+  undergroundAreaPalette,
+  castleAreaPalette,
+];
+
+/**
+ * Universal-backdrop colour written to PPU `$3F00` per area type, mirrored
+ * at slot 0 of every BG sub-palette. Ported from the asm's `BackgroundColors`
+ * table (SMBDIS:1426); the second row that handles `BackgroundColorCtrl`
+ * (night levels) lands with that slice.
+ */
+export const areaBackdropColors: readonly [number, number, number, number] = [0x22, 0x22, 0x0f, 0x0f];

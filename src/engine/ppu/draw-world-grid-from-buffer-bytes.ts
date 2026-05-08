@@ -1,5 +1,5 @@
 import { Palette0_MTiles, Palette1_MTiles, Palette2_MTiles, Palette3_MTiles } from '../../data/extracted/palette-mtiles.js';
-import { drawTile } from './draw-tile.js';
+import { drawBgTile } from './draw-bg-tile.js';
 import type { BakedChrSheet } from './types.js';
 import { METATILE_PX, TILE_PX } from './types.js';
 
@@ -12,14 +12,14 @@ export function drawMetatileBufferByte(ctx: CanvasRenderingContext2D, baked: Bak
   const table = paletteMetatileQuads[paletteIndex];
 
   const topLeft = table[base];
-  const topRight = table[base + 1];
-  const bottomLeft = table[base + 2];
+  const bottomLeft = table[base + 1];
+  const topRight = table[base + 2];
   const bottomRight = table[base + 3];
 
-  drawTile(ctx, baked, topLeft, paletteIndex, xPx, yPx);
-  drawTile(ctx, baked, topRight, paletteIndex, xPx + TILE_PX, yPx);
-  drawTile(ctx, baked, bottomLeft, paletteIndex, xPx, yPx + TILE_PX);
-  drawTile(ctx, baked, bottomRight, paletteIndex, xPx + TILE_PX, yPx + TILE_PX);
+  drawBgTile(ctx, baked, topLeft, paletteIndex, xPx, yPx);
+  drawBgTile(ctx, baked, topRight, paletteIndex, xPx + TILE_PX, yPx);
+  drawBgTile(ctx, baked, bottomLeft, paletteIndex, xPx, yPx + TILE_PX);
+  drawBgTile(ctx, baked, bottomRight, paletteIndex, xPx + TILE_PX, yPx + TILE_PX);
 }
 
 export function drawWorldGridFromBufferBytes(

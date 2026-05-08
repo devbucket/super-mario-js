@@ -10,13 +10,14 @@ import { SHEET_PX_W, SUB_PALETTE_COUNT } from '../types.js';
 export function recolourTileRow(
   sourceRgba: Uint8ClampedArray,
   destRgba: Uint8ClampedArray,
-  yRow: number,
+  sourceYRow: number,
+  destYRow: number,
   areaPalette: AreaPalette,
   masterPalette: MasterPalette,
 ): void {
-  const sourceRowStart = yRow * SHEET_PX_W * 4;
+  const sourceRowStart = sourceYRow * SHEET_PX_W * 4;
   const bakedRowWidthPx = SHEET_PX_W * SUB_PALETTE_COUNT;
-  const destRowStart = yRow * bakedRowWidthPx * 4;
+  const destRowStart = destYRow * bakedRowWidthPx * 4;
 
   for (let p = 0; p < SUB_PALETTE_COUNT; p++) {
     const sub = areaPalette.background[p];
