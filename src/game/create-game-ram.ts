@@ -1,3 +1,4 @@
+import { displayDigitBytesLength } from '../data/status-bar-display-digit-layout.js';
 import type { GameRam } from './types.js';
 
 const METATILE_ROWS = 13;
@@ -27,6 +28,13 @@ export function createGameRam(): GameRam {
     backgroundColorCtrl: 0,
     playerEntranceCtrl: 0,
     gameTimerSetting: 0,
+    displayDigitBytes: new Uint8Array(displayDigitBytesLength),
+    digitModifierScratch: new Uint8Array(7),
+    gameTimerCtrlTimer: 0,
+    fetchNewGameTimerFlag: 1,
+    gameTimerExpiredFlag: 0,
+    operMode: 1,
+    playerStatus: 0,
     areaObjectLengthSlots: new Uint8Array([0xff, 0xff, 0xff]),
     areaObjectOffsetBuffer: new Uint8Array(3),
     areaObjectPageLoc: 0,

@@ -26,6 +26,26 @@ export interface GameRam {
   backgroundColorCtrl: number;
   playerEntranceCtrl: number;
   gameTimerSetting: number;
+  /**
+   * Contiguous status digit buffer (BCD 0–9 per nybble cell), indexed like the
+   * reference layout so ported math routines share one array.
+   */
+  displayDigitBytes: Uint8Array;
+  /**
+   * Seven-byte scratch for per-digit add/sub amounts; index 0 mirrors the
+   * cell immediately before the six modifier slots used in the digit math loop.
+   */
+  digitModifierScratch: Uint8Array;
+  /** Countdown between game-timer decrements when non-zero (frame timers block). */
+  gameTimerCtrlTimer: number;
+  /** When non-zero, next area load reapplies the header clock preset. */
+  fetchNewGameTimerFlag: number;
+  /** Set when the clock hits zero (death handling is deferred to game-mode slice). */
+  gameTimerExpiredFlag: number;
+  /** Primary mode: zero means title-style screen where the clock does not run. */
+  operMode: number;
+  /** Cleared when the clock expires; injury is not implemented in this slice. */
+  playerStatus: number;
   /** Three area-object slots; $ff means empty (matches init-dec pattern). */
   areaObjectLengthSlots: Uint8Array;
   areaObjectOffsetBuffer: Uint8Array;
