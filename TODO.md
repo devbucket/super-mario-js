@@ -47,13 +47,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Collision
 
-- [ ] Block buffer (`Block_Buffer_1`, `Block_Buffer_2`) layout
-- [ ] Port `GetBlockBufferAddr`
-- [ ] Port `BlockBufferCollision` for player
-- [ ] Mario lands on solid blocks
-- [ ] Mario bumps `?` blocks and bricks from below
-- [ ] Side collision with walls
-- [ ] **Milestone:** Mario can run, jump, and traverse 1-1 from start to flagpole geometry
+- [x] Block buffer (`Block_Buffer_1`, `Block_Buffer_2`) layout
+- [x] Port `GetBlockBufferAddr`
+- [x] Port `BlockBufferCollision` for player
+- [x] Mario lands on solid blocks
+- [x] Mario bumps `?` blocks and bricks from below
+- [x] Side collision with walls
+- [x] **Milestone:** Mario can run, jump, and traverse 1-1 from start to flagpole geometry
 
 ## HUD & status
 
