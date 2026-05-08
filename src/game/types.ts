@@ -93,6 +93,12 @@ export interface GameRam {
   playerCollisionBits: number;
   playerChangeSizeFlag: number;
   swimmingFlag: number;
+  /** Non-zero skips background collision (`DisableCollisionDet`). */
+  disableCollisionDetection: number;
+  /** Countdown after bumping a block from below (`BlockBounceTimer`). */
+  blockBounceTimer: number;
+  /** Short timer after side collision (`SideCollisionTimer`). */
+  sideCollisionTimer: number;
   jumpspringAnimCtrl: number;
   timerControl: number;
   playerAnimTimer: number;

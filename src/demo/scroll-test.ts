@@ -24,9 +24,6 @@ const VIEWPORT_W_PX = 256;
 const LEVEL_GRID_COLUMNS = 240;
 const LEVEL_GRID_ROWS = 13;
 
-/** Stub floor until block-buffer collision exists (world pixel Y). */
-const stubFloorYPx = 160;
-
 export interface DemoBundle {
   readonly tick: (joypad: JoypadBitMask) => void;
   readonly paint: (ctx: CanvasRenderingContext2D) => void;
@@ -80,7 +77,9 @@ export function createLevelPipelineDemo(config: LevelPipelineDemoConfig): DemoBu
       camera,
       worldWidthPx,
       viewportWidthPx: VIEWPORT_W_PX,
-      stubFloorYPx,
+      levelGrid: grid,
+      levelGridWidthColumns: LEVEL_GRID_COLUMNS,
+      levelGridHeightRows: LEVEL_GRID_ROWS,
     });
   }
 

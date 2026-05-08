@@ -1,5 +1,5 @@
-import { BlockBuffLowBounds } from '../data/extracted/metatile-dictionaries.js';
 import type { GameRam } from './types.js';
+import { filterMetatileByteForBlockBuffer } from './utils/filter-metatile-byte-for-block-buffer.js';
 
 export function writeMetatileColumnToBlockBuffers(ram: GameRam): void {
   const columnPos = ram.blockBufferColumnPos & 0x1f;
@@ -9,14 +9,7 @@ export function writeMetatileColumnToBlockBuffers(ram: GameRam): void {
   let offset = startOffset;
 
   for (let row = 0; row < 13; row++) {
-    let value = ram.metatileBuffer[row];
-    const paletteBits = value & 0xc0;
-    const paletteIndex = paletteBits >> 6;
-    const bound = BlockBuffLowBounds[paletteIndex];
-
-    if (value < bound) {
-      value = 0;
-    }
+    const value = filterMetatileByteForBlockBuffer(ram.metatileBuffer[row]);
 
     buffer[offset] = value;
     offset += 16;

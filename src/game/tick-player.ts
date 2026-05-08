@@ -3,7 +3,9 @@ import type { JoypadBitMask } from '../engine/input.js';
 import { clampPlayerToWorldLeftEdge } from './clamp-player-to-world-left-edge.js';
 import { decrementPlayerAuxTimers } from './decrement-player-aux-timers.js';
 import { nullifyHorizontalWhenHoldingDownOnGround } from './nullify-horizontal-when-holding-down-on-ground.js';
+import { playerBgCollision } from './player-bg-collision.js';
 import { stubClampPlayerToFlatFloor } from './stub-clamp-player-to-flat-floor.js';
+import { syncBlockBuffersFromGrid } from './sync-block-buffers-from-grid.js';
 import { syncMarioSizeFromPowerupTier } from './sync-mario-size-from-powerup-tier.js';
 import { tickPlayerMovementSubs } from './tick-player-movement-subs.js';
 import type { GameRam } from './types.js';
@@ -16,7 +18,11 @@ export interface TickPlayerContext {
   readonly camera: Camera;
   readonly worldWidthPx: number;
   readonly viewportWidthPx: number;
-  readonly stubFloorYPx: number;
+  /** When set, clamps Mario to this world Y when block collision is inactive. */
+  readonly stubFloorYPx?: number | null;
+  readonly levelGrid?: Uint8Array;
+  readonly levelGridWidthColumns?: number;
+  readonly levelGridHeightRows?: number;
 }
 
 /** Single-frame Mario simulation entry (`PlayerCtrlRoutine` subset). */
@@ -33,10 +39,24 @@ export function tickPlayer(ram: GameRam, ctx: TickPlayerContext): void {
     viewportWidthPx: ctx.viewportWidthPx,
   });
 
-  stubClampPlayerToFlatFloor(ram, ctx.stubFloorYPx);
-
   updatePlayerMovingDirectionFromSpeed(ram);
+
   updateCameraScrollFromPlayerWorldX(ctx.camera, ram, ctx.worldWidthPx, ctx.viewportWidthPx);
+
+  const grid = ctx.levelGrid;
+  const gridW = ctx.levelGridWidthColumns;
+  const gridH = ctx.levelGridHeightRows;
+
+  if (grid !== undefined && gridW !== undefined && gridH !== undefined) {
+    syncBlockBuffersFromGrid(ram, grid, gridW, ctx.camera.scrollXPx);
+    playerBgCollision(ram, {
+      levelGrid: grid,
+      levelGridWidthColumns: gridW,
+      levelGridHeightRows: gridH,
+    });
+  } else if (ctx.stubFloorYPx !== undefined && ctx.stubFloorYPx !== null) {
+    stubClampPlayerToFlatFloor(ram, ctx.stubFloorYPx);
+  }
 
   decrementPlayerAuxTimers(ram);
 

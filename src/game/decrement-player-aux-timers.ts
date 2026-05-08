@@ -9,4 +9,12 @@ export function decrementPlayerAuxTimers(ram: GameRam): void {
   if (ram.runningTimer > 0) {
     ram.runningTimer -= 1;
   }
+
+  if (ram.blockBounceTimer > 0) {
+    ram.blockBounceTimer -= 1;
+  }
+
+  if (ram.sideCollisionTimer > 0) {
+    ram.sideCollisionTimer -= 1;
+  }
 }

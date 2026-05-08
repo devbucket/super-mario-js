@@ -163,7 +163,7 @@ We build a runnable game at every milestone. We do **not** try to port the entir
 3. Camera/scroll: scroll the rendered screen horizontally with `←/→`.
 4. Area parser: port `AreaParserCore` + `DecodeAreaData`, feed it `L_GroundArea6` (level 1-1). When level 1-1 scrolls authentically, the hardest data work is done.
 5. Mario sprite + subpixel physics: walk/run/jump on a flat plane. Tune until jump arc visually matches NES gameplay.
-6. Block buffer collision: port `BlockBufferCollision` and `GetBlockBufferAddr`. Mario stands on blocks, hits bricks, bumps `?` blocks.
+6. Block buffer collision: port `BlockBufferCollision` and `GetBlockBufferAddr`. Mario stands on blocks, hits bricks, bumps `?` blocks. Block buffers may be filled from the same column pipeline the renderer uses, or — during the port — rebuilt each frame from the pre-built metatile grid if a regression test proves byte equivalence per world column.
 7. HUD/status bar: score, coin, world, time digits using the same digit table the asm uses.
 8. First enemy: Goomba (`RunGoomba`) — walking + stomp.
 9. Powerups: mushroom, fire flower, fireballs (`PowerUpObject`, `Fireball*`).
