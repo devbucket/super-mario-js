@@ -76,6 +76,15 @@ worldMenu.addEventListener('change', () => {
 
 areaMenu.addEventListener('change', rebuildDemo);
 
+window.addEventListener('keydown', (event: KeyboardEvent) => {
+  if (event.code !== 'KeyP') {
+    return;
+  }
+
+  event.preventDefault();
+  demo.toggleDebugSuper();
+});
+
 const detachResize = attachCanvasResize(canvasEl, root);
 const detachInput = attachKeyboardInput();
 

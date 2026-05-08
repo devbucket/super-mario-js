@@ -3,7 +3,6 @@ import { areaAddrOffsets, worldAddrOffsets } from '../data/extracted/world-area-
 import { masterPalette } from '../data/master-palette.js';
 import { areaBackdropColors, areaPalettesByType } from '../data/palettes.js';
 import { createCamera } from '../engine/camera/create-camera.js';
-import { updateCameraFromInput } from '../engine/camera/update-camera-from-input.js';
 import type { JoypadBitMask } from '../engine/input.js';
 import { bakePaletteVariants } from '../engine/ppu/bake-palette-variants.js';
 import { buildChrSheet } from '../engine/ppu/build-chr-sheet.js';
@@ -15,6 +14,9 @@ import { METATILE_PX, TILE_SLOTS } from '../engine/ppu/types.js';
 import { startTilePixelBuilder } from '../engine/ppu/utils/start-tile-pixel-builder.js';
 import { buildLevelMetatileGrid } from '../game/build-level-metatile-grid.js';
 import { createGameRam } from '../game/create-game-ram.js';
+import { drawMarioSprite } from '../game/draw-mario-sprite.js';
+import { getPlayerWorldXPx } from '../game/get-player-world-x-px.js';
+import { tickPlayer } from '../game/tick-player.js';
 import { loadAreaIntoRam } from './load-area-into-ram.js';
 
 const VIEWPORT_W_PX = 256;
@@ -22,9 +24,13 @@ const VIEWPORT_W_PX = 256;
 const LEVEL_GRID_COLUMNS = 240;
 const LEVEL_GRID_ROWS = 13;
 
+/** Stub floor until block-buffer collision exists (world pixel Y). */
+const stubFloorYPx = 160;
+
 export interface DemoBundle {
   readonly tick: (joypad: JoypadBitMask) => void;
   readonly paint: (ctx: CanvasRenderingContext2D) => void;
+  readonly toggleDebugSuper: () => void;
 }
 
 export function listAreaCountForWorld(worldNumber: number): number {
@@ -69,15 +75,30 @@ export function createLevelPipelineDemo(config: LevelPipelineDemoConfig): DemoBu
   };
 
   function tick(joypad: JoypadBitMask): void {
-    updateCameraFromInput(camera, joypad, worldWidthPx, VIEWPORT_W_PX);
+    tickPlayer(ram, {
+      joypad,
+      camera,
+      worldWidthPx,
+      viewportWidthPx: VIEWPORT_W_PX,
+      stubFloorYPx,
+    });
   }
 
   function paint(ctx: CanvasRenderingContext2D): void {
     drawWorldGridFromBufferBytes(ctx, baked, grid, LEVEL_GRID_COLUMNS, LEVEL_GRID_ROWS, camera.scrollXPx, VIEWPORT_W_PX);
+
+    const screenXMario = getPlayerWorldXPx(ram) - camera.scrollXPx;
+
+    drawMarioSprite(ctx, baked, ram, screenXMario, ram.playerYPx);
+
     drawHudOverlay(ctx, hudState);
   }
 
-  return { tick, paint };
+  function toggleDebugSuper(): void {
+    ram.marioPowerupTier = ram.marioPowerupTier === 0 ? 1 : 0;
+  }
+
+  return { tick, paint, toggleDebugSuper };
 }
 
 /** @deprecated Use {@link createLevelPipelineDemo}. */
