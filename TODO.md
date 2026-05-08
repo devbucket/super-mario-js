@@ -36,14 +36,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Mario
 
-- [ ] Subpixel position type and helpers (`{ x, xSub }`, add-with-carry)
-- [ ] Port `Player_*` RAM slots into the `RAM` module
-- [ ] Port `FrictionAdder*`, `MaximumLeftSpeed`, `MaximumRightSpeed`, `RunningSpeed`, `VerticalForce*`
-- [ ] Walking + running on a flat plane
-- [ ] Jumping with NES-faithful arc
-- [ ] Mario sprite animation (idle / walk / run / jump / skid)
-- [ ] Crouching (big Mario)
-- [ ] Facing direction & skid frame
+- [x] Subpixel position type and helpers (`{ x, xSub }`, add-with-carry)
+- [x] Port `Player_*` RAM slots into the `RAM` module
+- [x] Port `FrictionAdder*`, `MaximumLeftSpeed`, `MaximumRightSpeed`, `RunningSpeed`, `VerticalForce*`
+- [x] Walking + running on a flat plane
+- [x] Jumping with NES-faithful arc
+- [x] Mario sprite animation (idle / walk / run / jump / skid)
+- [x] Crouching (big Mario)
+- [x] Facing direction & skid frame
 
 ## Collision
 

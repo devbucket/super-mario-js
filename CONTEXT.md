@@ -185,6 +185,8 @@ These are mistakes that look correct in isolation but quietly break the "it feel
 - **Don't use `Math.random`.** Port `PseudoRandomBitReg`; some game behaviour depends on its predictable cadence.
 - **Don't normalise diagonal speed.** Mario doesn't move on a vector; X and Y are independent.
 - **Don't tune jump physics by feel.** Copy the constants. If it feels wrong, the bug is somewhere else.
+- **Stub ground before block collision.** In the Mario slice (before the block buffer drives collision), treat landing as a fixed **world-space** floor line aligned with the intended playfield band. Only the grounded predicate is provisional — subpixel forces and constants stay faithful to the cartridge.
+- **Stub left boundary vs signed page.** Until scroll-lock and block-buffer collision exist, pin the player at the left edge using **world extent**: treat unsigned world X greater than `worldWidthPx + viewportWidthPx` as scroll underflow garbage and reset. Do **not** infer “past the left edge” from `playerPageLoc >= 0x80` alone — on long areas that byte can be valid for positive world X.
 
 ### Architecture
 
@@ -215,6 +217,7 @@ These are mistakes that look correct in isolation but quietly break the "it feel
 - **Don't build all 32 levels before getting Goomba right.** Vertical slices.
 - **Don't add features that the original doesn't have.** "Wall jump would be cool" — no. The goal is `=`, not `+`.
 - **Don't write tests for the renderer.** Write tests for parsers and physics only — those are pure functions over data.
+- **Demo-local toggles for unfinished systems.** Until a subsystem exists (e.g. mushroom pickup), use **demo-only** controls or flags to exercise behaviour (such as super Mario for crouch) without writing fake state into future production paths.
 
 ## Out of scope (explicitly)
 
