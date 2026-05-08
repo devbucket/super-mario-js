@@ -1,7 +1,7 @@
 import { Palette0_MTiles, Palette1_MTiles, Palette2_MTiles, Palette3_MTiles } from '../../data/extracted/palette-mtiles.js';
 import { drawBgTile } from './draw-bg-tile.js';
 import type { BakedChrSheet } from './types.js';
-import { METATILE_PX, TILE_PX } from './types.js';
+import { METATILE_PX, NES_PLAYFIELD_ORIGIN_Y_PX, TILE_PX } from './types.js';
 
 const paletteMetatileQuads: readonly Uint8Array[] = [Palette0_MTiles, Palette1_MTiles, Palette2_MTiles, Palette3_MTiles];
 
@@ -40,7 +40,7 @@ export function drawWorldGridFromBufferBytes(
     for (let col = firstColMt; col <= lastColMt; col++) {
       const combined = grid[rowOffset + col];
       const screenX = col * METATILE_PX - scrollXPx;
-      const screenY = row * METATILE_PX;
+      const screenY = NES_PLAYFIELD_ORIGIN_Y_PX + row * METATILE_PX;
 
       drawMetatileBufferByte(ctx, baked, combined, screenX, screenY);
     }

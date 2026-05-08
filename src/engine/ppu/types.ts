@@ -31,6 +31,13 @@ export const PALETTE_INDICES_PER_SUB = 4;
 
 export const METATILE_PX = 16;
 
+/**
+ * Visible gameplay layer starts immediately below fixed nametable HUD rows 0–3
+ * (`$2043–$207a`): last status tile row ends at pixel 31, next row begins at 32.
+ * Rendering must offset BG and sprites by this amount so skies/clouds align with SMB.
+ */
+export const NES_PLAYFIELD_ORIGIN_Y_PX = 32;
+
 export type RgbTriple = readonly [number, number, number];
 export type MasterPalette = readonly RgbTriple[];
 export type SubPalette = readonly [number, number, number, number];
