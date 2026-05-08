@@ -1,3 +1,4 @@
+import { incAreaObjectOffset } from './inc-area-object-offset.js';
 import { runAreaObjectJumpEngine } from './run-area-object-jump-engine.js';
 import type { GameRam } from './types.js';
 
@@ -18,17 +19,14 @@ export function decodeAreaData(ram: GameRam, slot: number): DecodeAreaDataResult
     return 'levelEnd';
   }
 
-  let addend = 0x10;
   const row = byte0 & 0x0f;
+
+  let addend = 0;
 
   if (row === 0x0f) {
     addend = 0x10;
-  } else {
+  } else if (row === 0x0c) {
     addend = 0x08;
-
-    if (row !== 0x0c) {
-      addend = 0;
-    }
   }
 
   ram.areaObjectDecoderAddend = addend;
@@ -48,14 +46,13 @@ export function decodeAreaData(ram: GameRam, slot: number): DecodeAreaDataResult
       return 'leave';
     }
 
-    let temp = byte1 & 0x7f;
+    const masked = byte1 & 0x7f;
 
-    if ((temp & 0x0f) === 0x0b) {
+    if (masked === 0x4b) {
       ram.loopCommand++;
     }
 
-    temp &= 0x3f;
-    ram.scratchObjectBits = temp;
+    ram.scratchObjectBits = masked & 0x3f;
 
     return normObj(ram, slot);
   }
@@ -73,10 +70,8 @@ export function decodeAreaData(ram: GameRam, slot: number): DecodeAreaDataResult
 
     let stored = largeBits;
 
-    if (stored === 0x70) {
-      if ((byte1 & 0x08) !== 0) {
-        stored = 0;
-      }
+    if (stored === 0x70 && (byte1 & 0x08) !== 0) {
+      stored = 0;
     }
 
     ram.scratchObjectBits = stored >> 4;
@@ -84,9 +79,9 @@ export function decodeAreaData(ram: GameRam, slot: number): DecodeAreaDataResult
     return normObj(ram, slot);
   }
 
-  const byte1 = ram.areaObjectBytes[dataIndex + 1];
+  const byte1Special = ram.areaObjectBytes[dataIndex + 1];
 
-  ram.scratchObjectBits = (byte1 & 0x70) >> 4;
+  ram.scratchObjectBits = (byte1Special & 0x70) >> 4;
 
   return normObj(ram, slot);
 }
@@ -114,6 +109,7 @@ function normObj(ram: GameRam, slot: number): DecodeAreaDataResult {
     return 'leave';
   }
 
+  storeAndIncOffset(ram, slot);
   runDecodedHandler(ram);
 
   return 'handled';
@@ -134,13 +130,15 @@ function initRearPath(ram: GameRam, slot: number): DecodeAreaDataResult {
     return 'leave';
   }
 
-  ram.areaObjectOffsetBuffer[slot] = ram.areaDataOffset;
-  ram.areaDataOffset += 2;
-  ram.areaObjectPageSel = 0;
-
+  storeAndIncOffset(ram, slot);
   runDecodedHandler(ram);
 
   return 'handled';
+}
+
+function storeAndIncOffset(ram: GameRam, slot: number): void {
+  ram.areaObjectOffsetBuffer[slot] = ram.areaDataOffset;
+  incAreaObjectOffset(ram);
 }
 
 function runDecodedHandler(ram: GameRam): void {

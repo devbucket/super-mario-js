@@ -1,6 +1,8 @@
 import { Bitmasks, TerrainMetatiles, TerrainRenderBits } from '../data/extracted/metatile-dictionaries.js';
 import type { GameRam } from './types.js';
 
+const ROWS = 13;
+
 export function renderTerrainColumn(ram: GameRam): void {
   let terrainMetatile = TerrainMetatiles[ram.areaType];
 
@@ -15,16 +17,14 @@ export function renderTerrainColumn(ram: GameRam): void {
   let row = 0;
   let bitsPointer = ram.terrainControl << 1;
 
-  while (row < 0x0d && bitsPointer + 1 < TerrainRenderBits.length) {
+  while (row < ROWS) {
     let bitsByte = TerrainRenderBits[bitsPointer];
-
-    bitsPointer++;
 
     if (ram.cloudTypeOverride !== 0 && row !== 0) {
       bitsByte &= 0x08;
     }
 
-    for (let maskIdx = 0; maskIdx < 8 && row < 0x0d; maskIdx++) {
+    for (let maskIdx = 0; maskIdx < 8 && row < ROWS; maskIdx++) {
       const mask = Bitmasks[maskIdx];
 
       if ((bitsByte & mask) !== 0) {

@@ -20,6 +20,15 @@ import { verticalPipe } from './area-objects/vertical-pipe.js';
 import { waterPipe } from './area-objects/water-pipe.js';
 import type { GameRam } from './types.js';
 
+/**
+ * Order mirrors the SMBDIS area-object jump table 1:1:
+ * - 0..7   large objects on rows 0-11 (d6-d4 set)
+ * - 8..15  special row 12 objects
+ * - 16..21 special row 15 objects
+ * - 22..33 small objects on rows 0-11 (d6-d4 clear)
+ * - 34..45 row 13 objects (d6 set)
+ * - 46     row 14 object (AlterAreaAttributes)
+ */
 export const areaObjectHandlers: readonly ((ram: GameRam) => void)[] = [
   verticalPipe,
   areaStyleObject,
@@ -37,7 +46,6 @@ export const areaObjectHandlers: readonly ((ram: GameRam) => void)[] = [
   noopAreaObject,
   questionBlockRowHigh,
   questionBlockRowLow,
-  noopAreaObject,
   noopAreaObject,
   noopAreaObject,
   noopAreaObject,

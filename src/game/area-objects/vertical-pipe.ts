@@ -8,16 +8,15 @@ export function verticalPipe(ram: GameRam): void {
 
   getPipeHeight(ram, slot);
 
-  let styleIndex = ram.areaObjectLengthSlots[slot];
+  let styleIndex = ram.areaObjectLengthSlots[slot] & 0xff;
 
   if (ram.scratchObjectBits !== 0) {
     styleIndex = (styleIndex + 4) & 0xff;
   }
 
   const row = ram.objectRowIndex;
-  const tableBase = (styleIndex & 0xff) << 1;
-  const topTile = VerticalPipeData[tableBase];
-  const shaftTile = VerticalPipeData[tableBase + 2];
+  const topTile = VerticalPipeData[styleIndex];
+  const shaftTile = VerticalPipeData[styleIndex + 2];
 
   ram.metatileBuffer[row] = topTile;
 
