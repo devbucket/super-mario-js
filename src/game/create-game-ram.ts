@@ -1,0 +1,51 @@
+import type { GameRam } from './types.js';
+
+const METATILE_ROWS = 13;
+const BLOCK_BUFFER_BYTES = 16 * 13;
+
+export function createGameRam(): GameRam {
+  return {
+    worldNumber: 0,
+    areaNumber: 0,
+    areaPointer: 0,
+    areaType: 0,
+    areaAddrsLowOffset: 0,
+    areaObjectBytes: new Uint8Array(0),
+    enemyObjectBytes: new Uint8Array(0),
+    areaDataOffset: 0,
+    metatileBuffer: new Uint8Array(METATILE_ROWS),
+    blockBuffer1: new Uint8Array(BLOCK_BUFFER_BYTES),
+    blockBuffer2: new Uint8Array(BLOCK_BUFFER_BYTES),
+    currentColumnPos: 0,
+    currentPageLoc: 0,
+    blockBufferColumnPos: 0,
+    backgroundScenery: 0,
+    foregroundScenery: 0,
+    terrainControl: 0,
+    cloudTypeOverride: 0,
+    areaStyle: 0,
+    backgroundColorCtrl: 0,
+    playerEntranceCtrl: 0,
+    gameTimerSetting: 0,
+    areaObjectLengthSlots: new Uint8Array([0xff, 0xff, 0xff]),
+    areaObjectOffsetBuffer: new Uint8Array(3),
+    areaObjectPageLoc: 0,
+    areaObjectPageSel: 0,
+    behindAreaParserFlag: 0,
+    objectOffset: 0,
+    backloadingFlag: 0,
+    loopCommand: 0,
+    scratchObjectBits: 0,
+    objectRowIndex: 0,
+    areaObjectDecoderAddend: 0,
+    hiddenOneUpFlag: 0,
+    staircaseControl: 0,
+    mushroomLedgeHalfLengthSlots: new Uint8Array(3),
+    cannonOffset: 0,
+    whirlpoolOffset: 0,
+    enemyFlagSlots: new Uint8Array(5),
+    primaryHardMode: 0,
+    halfwayPage: 0,
+    verticalObjectScratch: 0,
+  };
+}
