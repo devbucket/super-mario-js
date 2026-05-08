@@ -57,9 +57,9 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## HUD & status
 
-- [ ] Score / coin / world / time digit rendering using the asm's digit table
-- [ ] Game timer countdown
-- [ ] Hurry-up music trigger at 100s
+- [x] Score / coin / world / time digit rendering using the asm's digit table
+- [x] Game timer countdown
+- [x] Hurry-up music trigger at 100s
 
 ## Enemies (one at a time)
 

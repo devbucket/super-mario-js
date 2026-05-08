@@ -67,23 +67,43 @@ function rebuildDemo(): void {
   demo = createLevelPipelineDemo({ worldNumber, areaNumber });
 }
 
-worldMenu.addEventListener('change', () => {
+function onWorldMenuChange(): void {
   const worldNumber = Number.parseInt(worldMenu.value, 10);
 
   populateAreaSelect(areaMenu, worldNumber);
   rebuildDemo();
-});
+}
 
-areaMenu.addEventListener('change', rebuildDemo);
+function onAreaMenuChange(): void {
+  rebuildDemo();
+}
 
-window.addEventListener('keydown', (event: KeyboardEvent) => {
-  if (event.code !== 'KeyP') {
+function onDemoDebugKeydown(event: KeyboardEvent): void {
+  if (event.code === 'KeyP') {
+    event.preventDefault();
+    demo.toggleDebugSuper();
+
     return;
   }
 
-  event.preventDefault();
-  demo.toggleDebugSuper();
-});
+  if (event.code === 'KeyC') {
+    event.preventDefault();
+    demo.debugAddCoin();
+
+    return;
+  }
+
+  if (event.code === 'KeyV') {
+    event.preventDefault();
+    demo.debugAddScore();
+
+    return;
+  }
+}
+
+worldMenu.addEventListener('change', onWorldMenuChange);
+areaMenu.addEventListener('change', onAreaMenuChange);
+window.addEventListener('keydown', onDemoDebugKeydown);
 
 const detachResize = attachCanvasResize(canvasEl, root);
 const detachInput = attachKeyboardInput();
@@ -97,8 +117,18 @@ const detachLoop = startGameLoop(
   },
 );
 
-window.addEventListener('beforeunload', () => {
+function dispose(): void {
+  window.removeEventListener('beforeunload', dispose);
+  worldMenu.removeEventListener('change', onWorldMenuChange);
+  areaMenu.removeEventListener('change', onAreaMenuChange);
+  window.removeEventListener('keydown', onDemoDebugKeydown);
   detachResize();
   detachInput();
   detachLoop();
-});
+}
+
+window.addEventListener('beforeunload', dispose);
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(dispose);
+}

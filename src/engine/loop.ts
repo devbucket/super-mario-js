@@ -1,7 +1,8 @@
 export const SIM_HZ = 60;
 export const SIM_DT_MS = 1000 / SIM_HZ;
 /** After tab sleep / breakpoint, never run more than this many ticks in one rAF. */
-export const MAX_STEPS_PER_FRAME = 4;
+/** Capped at one so the level clock cannot advance multiple times per display frame. */
+export const MAX_STEPS_PER_FRAME = 1;
 
 /**
  * If we fall far behind wall clock, discard excess accumulator so we do not spiral.

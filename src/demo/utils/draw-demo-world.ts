@@ -1,6 +1,6 @@
 import { drawMetatile } from '../../engine/ppu/draw-metatile.js';
 import type { BakedChrSheet, MetatileTable } from '../../engine/ppu/types.js';
-import { METATILE_PX } from '../../engine/ppu/types.js';
+import { METATILE_PX, NES_PLAYFIELD_ORIGIN_Y_PX } from '../../engine/ppu/types.js';
 
 /**
  * Render the visible columns of the demo level for the current camera.
@@ -28,7 +28,7 @@ export function drawDemoWorld(
     for (let col = firstColMt; col <= lastColMt; col++) {
       const mtIndex = metatiles[rowOffset + col];
       const screenX = col * METATILE_PX - scrollXPx;
-      const screenY = row * METATILE_PX;
+      const screenY = NES_PLAYFIELD_ORIGIN_Y_PX + row * METATILE_PX;
 
       drawMetatile(ctx, baked, table, mtIndex, screenX, screenY);
     }
