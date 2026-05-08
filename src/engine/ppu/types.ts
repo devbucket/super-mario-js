@@ -37,6 +37,7 @@ export type SubPalette = readonly [number, number, number, number];
 
 export interface AreaPalette {
   readonly background: readonly [SubPalette, SubPalette, SubPalette, SubPalette];
+  readonly sprite: readonly [SubPalette, SubPalette, SubPalette, SubPalette];
 }
 
 export interface BakedBank {
@@ -45,7 +46,7 @@ export interface BakedBank {
 
 export interface BakedChrSheet {
   readonly bgBank: BakedBank;
-  readonly spriteBank: BakedBank | null;
+  readonly spriteBank: BakedBank;
   readonly tilePx: number;
   readonly tilesPerRow: number;
   readonly subPaletteCount: number;

@@ -1,3 +1,4 @@
+import { bakeSpriteBank } from './bake-sprite-bank.js';
 import type { AreaPalette, BakedChrSheet, MasterPalette } from './types.js';
 import { BG_BANK_SOURCE_OFFSET, SHEET_PX_H, SHEET_PX_W, SUB_PALETTE_COUNT, TILE_PX, TILES_PER_BANK, TILES_PER_SHEET_ROW } from './types.js';
 import { recolourTileRow } from './utils/recolour-tile-row.js';
@@ -14,8 +15,8 @@ const BANK_PX_H = (TILES_PER_BANK / TILES_PER_SHEET_ROW) * TILE_PX;
  * pixels of width, so the baked canvas is `SHEET_PX_W * SUB_PALETTE_COUNT`
  * wide by `BANK_PX_H` (= 128 px) tall.
  *
- * The sprite pattern table stays unbaked here. The sprite slice will rebake
- * it with sprite sub-palettes and populate `spriteBank`.
+ * The sprite pattern table is baked the same way into `spriteBank`, using
+ * sprite sub-palettes from `AreaPalette.sprite`.
  */
 export function bakePaletteVariants(chrSheet: OffscreenCanvas, masterPalette: MasterPalette, areaPalette: AreaPalette): BakedChrSheet {
   const sourceCtx = chrSheet.getContext('2d');
@@ -41,9 +42,11 @@ export function bakePaletteVariants(chrSheet: OffscreenCanvas, masterPalette: Ma
 
   bgCtx.putImageData(bakedImage, 0, 0);
 
+  const spriteBank = bakeSpriteBank(chrSheet, masterPalette, areaPalette);
+
   return {
     bgBank: { canvas: bgCanvas },
-    spriteBank: null,
+    spriteBank,
     tilePx: TILE_PX,
     tilesPerRow: TILES_PER_SHEET_ROW,
     subPaletteCount: SUB_PALETTE_COUNT,

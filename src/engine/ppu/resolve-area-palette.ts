@@ -19,5 +19,5 @@ export function resolveAreaPalette(rawPalette: AreaPalette, universalBackdrop: n
     [universalBackdrop, sub3[1], sub3[2], sub3[3]],
   ];
 
-  return { background: resolved };
+  return { background: resolved, sprite: rawPalette.sprite };
 }
