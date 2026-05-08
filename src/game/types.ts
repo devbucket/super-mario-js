@@ -50,4 +50,57 @@ export interface GameRam {
   halfwayPage: number;
   /** Scratch for pipe height / column routines (6502 $06). */
   verticalObjectScratch: number;
+
+  // --- Player (Mario) — field shape follows routine access order, modern names only.
+
+  /** 1 = small, 0 = big (matches boot init). */
+  marioSizeCode: number;
+  /**
+   * Provisional powerup tier for this slice: 0 = small, 1 = super (crouch/height only).
+   * Collapses into `marioSizeCode` when applying size for physics/CHR.
+   */
+  marioPowerupTier: number;
+  crouchingFlag: number;
+  /** 0 = on ground, 1 = jump/swim, 2 = falling, 3 = climbing (climbing not used in this slice). */
+  playerState: number;
+  playerPageLoc: number;
+  playerXPx: number;
+  playerXSpeed: number;
+  /** Fractional horizontal accumulator used with horizontal speed nybbles. */
+  playerHorizontalMoveForce: number;
+  playerXSpeedAbsolute: number;
+  frictionAdderHigh: number;
+  frictionAdderLow: number;
+  maximumLeftSpeed: number;
+  maximumRightSpeed: number;
+  runningSpeed: number;
+  runningTimer: number;
+  playerFacingDir: number;
+  playerMovingDir: number;
+  playerYPx: number;
+  playerYHighPos: number;
+  playerYSpeed: number;
+  playerYMoveForce: number;
+  playerYMoveForceDummy: number;
+  verticalForce: number;
+  verticalForceDown: number;
+  jumpSwimTimer: number;
+  jumpOriginYPosition: number;
+  jumpOriginYHighPos: number;
+  diffToHaltJump: number;
+  gameEngineSubroutine: number;
+  /** Until collision runs, keep at 0xff so movement logic sees all directions. */
+  playerCollisionBits: number;
+  playerChangeSizeFlag: number;
+  swimmingFlag: number;
+  jumpspringAnimCtrl: number;
+  timerControl: number;
+  playerAnimTimer: number;
+  playerAnimTimerSet: number;
+  playerAnimFrame: number;
+  /** Packed like SMB `SavedJoypadBits` after `packJoypadBitsLikeSmb`. */
+  savedJoypadBits: number;
+  previousAbJoypadBits: number;
+  /** `KeyP` toggles super for crouch/CHR debug (edge-detected in demo). */
+  debugSuperToggleRequest: number;
 }
