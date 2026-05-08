@@ -1,7 +1,7 @@
 import { chrTiles } from '../data/chr-tiles.js';
 import { areaAddrOffsets, worldAddrOffsets } from '../data/extracted/world-area-pointers.js';
 import { masterPalette } from '../data/master-palette.js';
-import { overworldGroundPalette } from '../data/palettes.js';
+import { areaBackdropColors, areaPalettesByType } from '../data/palettes.js';
 import { createCamera } from '../engine/camera/create-camera.js';
 import { updateCameraFromInput } from '../engine/camera/update-camera-from-input.js';
 import type { JoypadBitMask } from '../engine/input.js';
@@ -10,6 +10,7 @@ import { buildChrSheet } from '../engine/ppu/build-chr-sheet.js';
 import type { HudState } from '../engine/ppu/draw-hud-overlay.js';
 import { drawHudOverlay } from '../engine/ppu/draw-hud-overlay.js';
 import { drawWorldGridFromBufferBytes } from '../engine/ppu/draw-world-grid-from-buffer-bytes.js';
+import { resolveAreaPalette } from '../engine/ppu/resolve-area-palette.js';
 import { METATILE_PX, TILE_SLOTS } from '../engine/ppu/types.js';
 import { startTilePixelBuilder } from '../engine/ppu/utils/start-tile-pixel-builder.js';
 import { buildLevelMetatileGrid } from '../game/build-level-metatile-grid.js';
@@ -45,12 +46,16 @@ export function createLevelPipelineDemo(config: LevelPipelineDemoConfig): DemoBu
   chrTilesWithDebugSlot[TILE_SLOTS - 1] = startTilePixelBuilder().row(0, '33333333').rect(2, 2, 5, 5, 2).build();
 
   const chrSheet = buildChrSheet(chrTilesWithDebugSlot);
-  const baked = bakePaletteVariants(chrSheet, masterPalette, overworldGroundPalette);
 
   const ram = createGameRam();
 
   loadAreaIntoRam(ram, config.worldNumber, config.areaNumber);
   const grid = buildLevelMetatileGrid(ram, LEVEL_GRID_COLUMNS);
+
+  const rawAreaPalette = areaPalettesByType[ram.areaType];
+  const universalBackdrop = areaBackdropColors[ram.areaType];
+  const resolvedAreaPalette = resolveAreaPalette(rawAreaPalette, universalBackdrop);
+  const baked = bakePaletteVariants(chrSheet, masterPalette, resolvedAreaPalette);
 
   const camera = createCamera();
   const worldWidthPx = LEVEL_GRID_COLUMNS * METATILE_PX;
